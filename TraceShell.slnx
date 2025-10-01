@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Cmd/Cmd.fsproj" />
+  <Project Path="TraceShell/TraceShell.fsproj" />
+</Solution>
