@@ -27,7 +27,7 @@ show trace0
 
 Output:
 
-```
+```fsharp
 ["fun"; "with"; "F#"]
 ```
 

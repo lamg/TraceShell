@@ -13,4 +13,8 @@
     <ProjectReference Include="..\TraceShell\TraceShell.fsproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FSharp.Compiler.Service" />
+  </ItemGroup>
+
 </Project>
