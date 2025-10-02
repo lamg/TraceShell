@@ -12,8 +12,8 @@ let userInputStream () =
     Console.Write ">>> "
     Console.ReadLine())
 
-let evalCommand (eval: string -> string) input =
-  match input with
+let evalCommand (eval: string -> string) (input: string) =
+  match input.Trim() with
   | ":q" -> Quit
   | ":h" -> PrintHelp
   | _ -> PrintOutput(eval input)
@@ -22,15 +22,16 @@ let dummyEval input = $"got {input}"
 
 let repl (evaluator: string -> string) =
   userInputStream ()
-  |> Seq.takeWhile (fun x -> x <> null)
-  |> Seq.map (evalCommand evaluator)
   |> Seq.takeWhile (function
-    | Quit -> false
-    | PrintOutput output ->
-      Console.WriteLine output
-      true
-    | PrintHelp ->
-      Console.WriteLine "HELP"
-      true)
+    | x when x = null -> false
+    | x ->
+      match evalCommand evaluator x with
+      | Quit -> false
+      | PrintOutput output ->
+        Console.WriteLine output
+        true
+      | PrintHelp ->
+        Console.WriteLine "HELP"
+        true)
   |> Seq.toList
   |> ignore
