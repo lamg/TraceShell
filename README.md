@@ -16,7 +16,7 @@ Target code:
 let simpleFun () =
   let xs = ["fun"; "with"; "F#"]
   xs |> List.map (fun x -> $"{x}!")
-``
+```
 
 Tracing session 0:
 
