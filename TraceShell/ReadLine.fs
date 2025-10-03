@@ -5,7 +5,8 @@ open System
 type Context =
   { prompt: string
     linePos: int // 0 <= linePos < line.Length
-    history: string list
+    historyLeft: string list
+    historyRight: string list
     line: string }
 
   member this.moveCursorRight() =
@@ -50,15 +51,45 @@ type Context =
 
       { this with line = head + tail }
 
-  member this.enterLine() =
+  member this.clearLine() =
     Console.CursorLeft <- this.prompt.Length
     Console.Write(String.replicate this.line.Length " ")
     Console.CursorLeft <- this.prompt.Length
 
-    { this with
-        line = ""
-        linePos = 0
-        history = this.line :: this.history }
+  member this.enterLine() =
+    this.clearLine ()
+
+    match this.line.Trim() with
+    | "" -> { this with line = ""; linePos = 0 }
+    | _ ->
+      { this with
+          line = ""
+          linePos = 0
+          historyLeft = this.line :: this.historyLeft }
+
+  member this.historyUp() =
+    match this.historyLeft with
+    | [] -> this
+    | lastLine :: olderLines ->
+      this.clearLine ()
+      Console.Write lastLine
+
+      { this with
+          historyLeft = olderLines
+          historyRight = this.line :: this.historyRight
+          line = lastLine
+          linePos = lastLine.Length }
+
+  member this.historyDown() =
+    match this.historyRight with
+    | [] -> this
+    | next :: newer ->
+      this.clearLine ()
+      Console.Write next
+
+      { this with
+          historyLeft = this.line :: this.historyLeft
+          historyRight = newer }
 
 let handleKey (ctx: Context) (key: ConsoleKeyInfo) =
   match key.Key with
@@ -66,6 +97,8 @@ let handleKey (ctx: Context) (key: ConsoleKeyInfo) =
   | ConsoleKey.Delete -> ctx.removeCharRight ()
   | ConsoleKey.LeftArrow -> ctx.moveCursorLeft ()
   | ConsoleKey.RightArrow -> ctx.moveCursorRight ()
+  | ConsoleKey.UpArrow -> ctx.historyUp ()
+  | ConsoleKey.DownArrow -> ctx.historyDown ()
   | ConsoleKey.Enter -> ctx.enterLine ()
   | _ ->
     Console.Write key.KeyChar
@@ -89,9 +122,10 @@ let start () =
   Console.Clear()
 
   let ctx =
-    { history = []
+    { historyLeft = []
+      historyRight = []
       line = ""
-      linePos = 0
+      linePos = 10
       prompt = ">>> " }
 
   Console.Write ctx.prompt
