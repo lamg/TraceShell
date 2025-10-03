@@ -86,6 +86,7 @@ let rec readLoop (ctx: Context) =
 let start () =
   let handler _sender (args: ConsoleCancelEventArgs) = args.Cancel <- false
   Console.CancelKeyPress.AddHandler handler
+  Console.Clear()
 
   let ctx =
     { history = []
