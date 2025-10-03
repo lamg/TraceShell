@@ -17,7 +17,9 @@ let makeSession () =
 
 let eval (session: FsiEvaluationSession) (input: string) =
   match session.EvalInteractionNonThrowing input with
-  | Choice.Choice1Of2(Some v), _ -> $"{v.ReflectionValue}"
+  | Choice.Choice1Of2(Some v), _ ->
+    // session.GetCompletions()
+    $"{v.ReflectionValue}"
   | Choice.Choice1Of2 None, _ -> "()"
   | Choice.Choice2Of2 exn, errs ->
     let msgs = errs |> Array.toList |> List.map (fun e -> e.Message)

@@ -2,6 +2,7 @@
 
 open System
 
+
 type Action =
   | Quit
   | PrintOutput of string
@@ -33,5 +34,4 @@ let repl (evaluator: string -> string) =
       | PrintHelp ->
         Console.WriteLine "HELP"
         true)
-  |> Seq.toList
-  |> ignore
+  |> Seq.iter ignore
