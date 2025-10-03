@@ -50,12 +50,23 @@ type Context =
 
       { this with line = head + tail }
 
+  member this.enterLine() =
+    Console.CursorLeft <- this.prompt.Length
+    Console.Write(String.replicate this.line.Length " ")
+    Console.CursorLeft <- this.prompt.Length
+
+    { this with
+        line = ""
+        linePos = 0
+        history = this.line :: this.history }
+
 let handleKey (ctx: Context) (key: ConsoleKeyInfo) =
   match key.Key with
   | ConsoleKey.Backspace -> ctx.removeCharLeft ()
   | ConsoleKey.Delete -> ctx.removeCharRight ()
   | ConsoleKey.LeftArrow -> ctx.moveCursorLeft ()
   | ConsoleKey.RightArrow -> ctx.moveCursorRight ()
+  | ConsoleKey.Enter -> ctx.enterLine ()
   | _ ->
     Console.Write key.KeyChar
 
@@ -68,7 +79,6 @@ let rec readLoop (ctx: Context) =
 
   match key.Key with
   | ConsoleKey.D when key.Modifiers = ConsoleModifiers.Control -> ()
-  | ConsoleKey.Enter -> readLoop ctx
   | _ ->
     let nctx = handleKey ctx key
     readLoop nctx
